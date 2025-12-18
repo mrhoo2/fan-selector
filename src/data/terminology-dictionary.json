@@ -1,0 +1,304 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Terminology Dictionary: Maps engineer specification notes to CAPS options",
+  
+  "electrical": {
+    "voltagePhase": {
+      "460/3/60": { "voltage": 460, "phase": 3, "frequency": 60 },
+      "460/3": { "voltage": 460, "phase": 3, "frequency": 60 },
+      "460V/3PH/60HZ": { "voltage": 460, "phase": 3, "frequency": 60 },
+      "480/3/60": { "voltage": 460, "phase": 3, "frequency": 60 },
+      "480V/3PH": { "voltage": 460, "phase": 3, "frequency": 60 },
+      
+      "208/3/60": { "voltage": 208, "phase": 3, "frequency": 60 },
+      "208/3": { "voltage": 208, "phase": 3, "frequency": 60 },
+      "208V/3PH/60HZ": { "voltage": 208, "phase": 3, "frequency": 60 },
+      
+      "230/3/60": { "voltage": 230, "phase": 3, "frequency": 60 },
+      "230/3": { "voltage": 230, "phase": 3, "frequency": 60 },
+      "230V/3PH": { "voltage": 230, "phase": 3, "frequency": 60 },
+      
+      "208/1/60": { "voltage": 208, "phase": 1, "frequency": 60 },
+      "208/1": { "voltage": 208, "phase": 1, "frequency": 60 },
+      "208V/1PH": { "voltage": 208, "phase": 1, "frequency": 60 },
+      
+      "230/1/60": { "voltage": 230, "phase": 1, "frequency": 60 },
+      "230/1": { "voltage": 230, "phase": 1, "frequency": 60 },
+      
+      "115/1/60": { "voltage": 115, "phase": 1, "frequency": 60 },
+      "115/1": { "voltage": 115, "phase": 1, "frequency": 60 },
+      "115V/1PH/60HZ": { "voltage": 115, "phase": 1, "frequency": 60 },
+      "120/1/60": { "voltage": 115, "phase": 1, "frequency": 60 },
+      "120V/1PH": { "voltage": 115, "phase": 1, "frequency": 60 },
+      
+      "277/1/60": { "voltage": 277, "phase": 1, "frequency": 60 },
+      "277/1": { "voltage": 277, "phase": 1, "frequency": 60 },
+      
+      "575/3/60": { "voltage": 575, "phase": 3, "frequency": 60 },
+      "575/3": { "voltage": 575, "phase": 3, "frequency": 60 },
+      "600/3/60": { "voltage": 575, "phase": 3, "frequency": 60 },
+      
+      "380/3/50": { "voltage": 380, "phase": 3, "frequency": 50 },
+      "400/3/50": { "voltage": 400, "phase": 3, "frequency": 50 }
+    },
+    
+    "enclosure": {
+      "tenv": "TENV",
+      "tefc": "TEFC",
+      "odp": "ODP",
+      "open drip proof": "ODP",
+      "totally enclosed non-ventilated": "TENV",
+      "totally enclosed fan cooled": "TEFC",
+      "ip55": "IP55",
+      "weatherproof": "TEFC"
+    },
+    
+    "efficiency": {
+      "premium": "Premium",
+      "premium efficiency": "Premium",
+      "high efficiency": "High",
+      "high eff": "High",
+      "standard": "Standard",
+      "epact": "High",
+      "nema premium": "Premium"
+    }
+  },
+  
+  "disconnect": {
+    "variations": {
+      "factory disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-1" },
+      "factory mounted disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-1" },
+      "disconnect switch": { "disconnectSwitch": true, "enclosureRating": "NEMA-1" },
+      "local disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-1" },
+      "fused disconnect": { "disconnectSwitch": true, "protection": "Fused" },
+      "circuit breaker disconnect": { "disconnectSwitch": true, "protection": "Circuit Breaker" },
+      "nema 1 disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-1" },
+      "nema 3r disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-3R" },
+      "nema 4 disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-4" },
+      "nema 4x disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-4X" },
+      "weatherproof disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-3R" },
+      "wp disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-3R" },
+      "outdoor disconnect": { "disconnectSwitch": true, "enclosureRating": "NEMA-3R" }
+    },
+    
+    "enclosureRatings": {
+      "nema-1": "NEMA-1",
+      "nema 1": "NEMA-1",
+      "nema1": "NEMA-1",
+      "nema-3r": "NEMA-3R",
+      "nema 3r": "NEMA-3R",
+      "nema3r": "NEMA-3R",
+      "nema-4": "NEMA-4",
+      "nema 4": "NEMA-4",
+      "nema4": "NEMA-4",
+      "nema-4x": "NEMA-4X",
+      "nema 4x": "NEMA-4X",
+      "nema4x": "NEMA-4X"
+    }
+  },
+  
+  "damper": {
+    "variations": {
+      "backdraft damper": { "damper": true, "actuatorType": "Gravity", "bladeAction": "Parallel" },
+      "back draft damper": { "damper": true, "actuatorType": "Gravity", "bladeAction": "Parallel" },
+      "gravity damper": { "damper": true, "actuatorType": "Gravity" },
+      "bd damper": { "damper": true, "actuatorType": "Gravity" },
+      "motorized damper": { "damper": true, "actuatorType": "Motorized" },
+      "mod damper": { "damper": true, "actuatorType": "Motorized" },
+      "control damper": { "damper": true, "actuatorType": "Motorized" },
+      "spring return damper": { "damper": true, "actuatorType": "Spring Return" },
+      "parallel blade": { "bladeAction": "Parallel" },
+      "opposed blade": { "bladeAction": "Opposed" },
+      "factory mounted damper": { "damper": true, "damperMounting": "Factory Mounted" },
+      "field mounted damper": { "damper": true, "damperMounting": "Loose" },
+      "loose damper": { "damper": true, "damperMounting": "Loose" }
+    },
+    
+    "models": {
+      "bd-100": "BD-100",
+      "bd100": "BD-100"
+    }
+  },
+  
+  "construction": {
+    "sparkResistance": {
+      "spark resistant": "TypeA",
+      "spark-resistant": "TypeA",
+      "type a spark": "TypeA",
+      "type a": "TypeA",
+      "spark resistant type a": "TypeA",
+      "type b spark": "TypeB",
+      "type b": "TypeB",
+      "spark resistant type b": "TypeB",
+      "type c spark": "TypeC",
+      "type c": "TypeC",
+      "spark resistant type c": "TypeC",
+      "amca a": "TypeA",
+      "amca b": "TypeB",
+      "amca c": "TypeC"
+    },
+    
+    "special": {
+      "high wind": { "highWindRated": true },
+      "high wind rated": { "highWindRated": true },
+      "hurricane rated": { "highWindRated": true },
+      "seismic": { "seismicRated": true },
+      "seismic rated": { "seismicRated": true },
+      "seismic zone": { "seismicRated": true },
+      "ibc seismic": { "seismicRated": true }
+    },
+    
+    "coatings": {
+      "powder coat": true,
+      "epoxy coating": true,
+      "baked enamel": true,
+      "heresite": true,
+      "phenolic coating": true,
+      "coastal": true
+    },
+    
+    "birdscreen": {
+      "galvanized birdscreen": "Galvanized",
+      "galv birdscreen": "Galvanized",
+      "aluminum birdscreen": "Aluminum",
+      "alum birdscreen": "Aluminum",
+      "stainless birdscreen": "Stainless",
+      "ss birdscreen": "Stainless",
+      "316 ss birdscreen": "Stainless",
+      "no birdscreen": "None"
+    },
+    
+    "fasteners": {
+      "stainless fasteners": "Stainless",
+      "ss fasteners": "Stainless",
+      "316 fasteners": "Stainless",
+      "stainless hardware": "Stainless",
+      "standard fasteners": "Standard"
+    }
+  },
+  
+  "driveType": {
+    "variations": {
+      "direct drive": "Direct",
+      "dd": "Direct",
+      "belt drive": "Belt",
+      "bd": "Belt",
+      "belt driven": "Belt",
+      "vg": "VG Only",
+      "varigreen": "VG Only",
+      "vari-green": "VG Only",
+      "ec motor": "VG Only",
+      "ecm": "VG Only"
+    }
+  },
+  
+  "mounting": {
+    "curb": {
+      "roof curb": { "roofCurbs": true },
+      "factory curb": { "roofCurbs": true },
+      "integral curb": { "roofCurbs": true },
+      "curb mounted": { "roofCurbs": true },
+      "curb extension": { "curbExtension": true },
+      "curb seal": { "curbSeal": true },
+      "curb cap": { "curbCapAdapter": true },
+      "hinged curb cap": { "hingedCurbCap": "Standard" }
+    },
+    
+    "tieDown": {
+      "tie down": { "tieDownPoints": true },
+      "tie-down": { "tieDownPoints": true },
+      "anchor points": { "tieDownPoints": true },
+      "seismic tie down": { "tieDownPoints": true, "seismicRated": true }
+    }
+  },
+  
+  "controls": {
+    "variGreen": {
+      "building automation": "Building Automation",
+      "bas": "Building Automation",
+      "bms": "Building Automation",
+      "0-10v": "0-10V",
+      "0-10 volt": "0-10V",
+      "4-20ma": "4-20mA",
+      "4-20 ma": "4-20mA",
+      "remote dial": "Remote Dial",
+      "remote speed control": "Remote Dial",
+      "wall control": "Remote Dial"
+    },
+    
+    "vfd": {
+      "vfd": { "applyVfd": true },
+      "variable frequency drive": { "applyVfd": true },
+      "variable speed drive": { "applyVfd": true },
+      "vsd": { "applyVfd": true },
+      "inverter duty": { "applyVfd": true }
+    }
+  },
+  
+  "accessories": {
+    "electrical": {
+      "motor starter": { "motorStarter": true },
+      "across the line starter": { "motorStarter": true },
+      "atl starter": { "motorStarter": true },
+      "pigtail": { "wiringPigtailAccessory": true },
+      "wiring pigtail": { "wiringPigtailAccessory": true },
+      "conduit chase": { "conduitChaseQty": 1 },
+      "dual conduit chase": { "conduitChaseQty": 2 }
+    },
+    
+    "security": {
+      "hood hasps": { "hoodHasps": true },
+      "hasps": { "hoodHasps": true },
+      "tamper resistant": { "hoodHasps": true },
+      "locking": { "hoodHasps": true }
+    },
+    
+    "warranty": {
+      "standard warranty": "1 Yr (Standard)",
+      "1 year warranty": "1 Yr (Standard)",
+      "3 year warranty": "3 Yr",
+      "5 year warranty": "5 Yr",
+      "extended warranty": "5 Yr"
+    }
+  },
+  
+  "equipmentTags": {
+    "prefixes": {
+      "EF": "Exhaust Fan",
+      "TEF": "Toilet Exhaust Fan",
+      "KEF": "Kitchen Exhaust Fan",
+      "GEF": "General Exhaust Fan",
+      "SF": "Supply Fan",
+      "RF": "Return Fan",
+      "ERF": "Exhaust/Return Fan",
+      "MAU": "Make-up Air Unit",
+      "RTU": "Rooftop Unit"
+    }
+  },
+  
+  "fanSeries": {
+    "g": {
+      "description": "Direct Drive Aluminum Spun Roof Fan",
+      "driveType": "Direct",
+      "greenheckModel": "G",
+      "accurexModel": "XRED"
+    },
+    "gb": {
+      "description": "Belt Drive Aluminum Spun Roof Fan", 
+      "driveType": "Belt",
+      "greenheckModel": "GB",
+      "accurexModel": "XREB"
+    }
+  },
+  
+  "_metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-12-18",
+    "description": "Maps engineer specification terminology to CAPS selection options",
+    "notes": [
+      "All keys are lowercase for case-insensitive matching",
+      "Values map to CAPS field names and option values",
+      "Expand this dictionary as new terminology is encountered"
+    ]
+  }
+}
