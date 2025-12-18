@@ -1,0 +1,45 @@
+# Project Intelligence: Greenheck Fan Selection System
+
+## Overview
+This project involves analyzing and working with Greenheck/Accurex fan selection software, specifically focusing on the G and GB series roof-mounted fans.
+
+## Key Patterns & Preferences
+
+### Code Structure
+- Decompiled C# code from .NET assemblies
+- COM-visible classes with GUID attributes
+- Repository pattern for data access (`IFanSelectorRepository`)
+- Factory pattern for creating selections
+- Strategy pattern for different drive types (Direct, Belt, VariGreen)
+
+### Naming Conventions
+- Models: Short codes like "G", "GB", "USFA", "VEKTOR-CD"
+- Accurex models prefixed with "X": XRED→G, XREB→GB
+- Sizes: Numeric strings like "103", "143HP", "203"
+- Speed codes: Single letters D, G, E, P indicate direct drive
+
+### Important Files
+- `Cfs.Fans.FanSelector.dll` - Core selection logic
+- `Cfs.Fans.FanSelector.Wrapper.dll` - Extended selection with post-processing
+- `Cfs.Fans.MotorSelector2.dll` - Motor selection business rules
+- `Cfs.Fans.DimensionWeightCalc.dll` - Dimension/weight calculations
+
+### Data Flow
+1. FanSelector receives input parameters
+2. Loops through models and sizes
+3. Filters by drive type availability
+4. Calculates air performance
+5. Applies static pressure corrections
+6. Validates rating limits
+7. Calculates sound outputs
+8. Returns valid/invalid selections
+
+## User Preferences
+- Focus on G (direct drive) and GB (belt drive) series
+- Interest in input parameters and validation checks
+- Working toward understanding selection requirements
+
+## Known Challenges
+- Model data stored in database tables, not in decompiled code
+- Some validation thresholds are runtime data, not hardcoded
+- Complex interdependencies between drive types and accessories

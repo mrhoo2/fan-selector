@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/* BuildVision Design System - Theme Configuration */
+@theme {
+  /* Font Family */
+  --font-sans: "Inter", system-ui, sans-serif;
+  
+  /* BuildVision Neutral Colors */
+  --color-neutral-50: #F8F8F8;
+  --color-neutral-100: #EDEDED;
+  --color-neutral-200: #C9CBCF;
+  --color-neutral-300: #AEB0B7;
+  --color-neutral-400: #9E9EA5;
+  --color-neutral-500: #8C8C92;
+  --color-neutral-600: #6C6C71;
+  --color-neutral-700: #535257;
+  --color-neutral-800: #2A2A2F;
+  --color-neutral-900: #18191B;
+  
+  /* BuildVision Primary Blue */
+  --color-bv-blue-100: #E9EEFF;
+  --color-bv-blue-200: #ABBBFF;
+  --color-bv-blue-300: #7383FF;
+  --color-bv-blue-400: #4A3AFF;
+  --color-bv-blue-500: #3F31DE;
+  --color-bv-blue-600: #3528BE;
+  --color-bv-blue-700: #201B80;
+  --color-bv-blue-800: #171063;
+  --color-bv-blue-900: #06042E;
+  --color-bv-blue: #4A3AFF;
+  
+  /* Semantic Colors */
+  --color-red-100: #FFDADA;
+  --color-red-400: #EC4343;
+  --color-red-700: #C85E3C;
+  
+  --color-yellow-100: #FFECAA;
+  --color-yellow-400: #FFCC17;
+  --color-yellow-700: #CC9300;
+  
+  --color-green-100: #B2FFDA;
+  --color-green-400: #16DA7C;
+  --color-green-700: #0B864B;
+  
+  --color-purple-100: #F3E8FF;
+  --color-purple-400: #CC98F6;
+  --color-purple-700: #6B21A8;
+  
+  /* Greenheck Brand */
+  --color-greenheck-green: #00843D;
+  --color-greenheck-dark: #006341;
+}
+
+/* Base Styles */
+html,
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-neutral-50);
+  color: var(--color-neutral-800);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-neutral-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-400);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-bv-blue-400);
+  outline-offset: 2px;
+}
+
+/* Markdown content styling */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content h1 {
+  font-size: 1.5rem;
+}
+.markdown-content h2 {
+  font-size: 1.25rem;
+}
+.markdown-content h3 {
+  font-size: 1.125rem;
+}
+
+.markdown-content p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content code {
+  background-color: var(--color-neutral-100);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: ui-monospace, monospace;
+}
+
+.markdown-content pre {
+  background-color: var(--color-neutral-100);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid var(--color-neutral-200);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.markdown-content th {
+  background-color: var(--color-neutral-100);
+  font-weight: 600;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content a {
+  color: var(--color-bv-blue-400);
+  text-decoration: underline;
+}
+
+.markdown-content a:hover {
+  color: var(--color-bv-blue-500);
+}
