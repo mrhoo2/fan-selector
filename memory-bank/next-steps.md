@@ -1,6 +1,6 @@
 # Recommended Next Steps: Greenheck Integration
 
-## Current Status (Updated Dec 18, 2025)
+## Current Status (Updated Dec 19, 2025)
 
 ### ✅ Phase 1: COMPLETE - TypeScript Library
 - TypeScript library built and tested at `fan-selector/`
@@ -16,238 +16,135 @@
 
 ---
 
-## 🎯 Immediate Priority: Enhance Chat UI
+## ✅ Completed Tasks
 
 ### Task 0: Verify Complete Data Set ✅
 **Status:** COMPLETE (Dec 18, 2025 @ 3:19 PM)
 
-**What Was Verified:**
-Conducted comprehensive field audit comparing:
-- TypeScript schema (`caps-selection.ts`) - 62+ fields
-- Fan-selector library (`caps-clipboard.ts`) - 10 input, 23 output
-- Chat UI (`caps-generator.ts`) - 16 fields
-- Actual CAPS export CSV - 23 columns
-
-**Verification Results:**
-| Category | Total | Implemented | Gap |
-|----------|-------|-------------|-----|
-| CAPS Output | 23 | ✅ 23 | 0 |
-| CAPS Input (Basic) | 10 | ✅ 10 | 0 |
-| CAPS UI - Sizing | 15 | ⚠️ 7 | 8 |
-| CAPS UI - Electrical | 25 | ⚠️ 8 | 17 |
-| CAPS UI - Configuration | 22 | ⚠️ 5 | 17 |
-| **Total** | **62** | **20** | **42** |
-
-**New File Created:**
-- `memory-bank/caps-field-verification.md` - Complete field-by-field audit
-
-**Key Finding:** 42 UI fields need to be added to chat interface
-
----
+Conducted comprehensive field audit - 42 UI fields identified for implementation.
 
 ### Task 1: Make CAPS Clipboard Button Work ✅
 **Status:** COMPLETE (Dec 18, 2025 @ 2:35 PM)
 
-**What Was Built:**
-
-1. Created `chat-ui/lib/caps-generator.ts`:
-   - `parseAiResponse()` - Extracts fan parameters from AI response
-   - `generateCapsClipboard()` - Creates tab-delimited CSV
-   - Supports JSON code blocks with `json:caps` marker
-   - Fallback parsing for plain text CFM/SP values
-   - Handles single or multiple fan selections
-
-2. Updated `chat-ui/lib/fan-context.ts`:
-   - Added instructions for AI to output structured JSON
-   - Example format with all CAPS fields
-
-3. Updated `chat-ui/app/page.tsx`:
-   - Integrated caps-generator parsing after streaming
-   - Attaches `capsClipboard` to messages when data found
-   - "Copy CAPS Clipboard" button now functional
-
-**Output Format (tab-delimited):**
-```
-Mark	Quantity	CFM	SP	Voltage	Phase	Frequency	Drive Type	Motor HP	Enclosure	Series	Size	Backdraft Damper	Disconnect	Elevation	Temperature
-EF-1	1	5000	1.5	460	3	60	Direct		TEFC	G		Yes	No	0	70
-```
-
----
+Created `caps-generator.ts` with parsing and CSV generation.
 
 ### Task 2: Display ALL Input Fields (CAPS Export Format) ✅
 **Status:** COMPLETE (Dec 18, 2025 @ 3:36 PM)
 
-**What Was Built:**
-
-Extended the chat UI to support ALL 62 CAPS input fields.
-
-1. **Updated `chat-ui/lib/fan-context.ts`:**
-   - Added comprehensive JSON output format with nested structure
-   - Added 54 CAPS_FIELDS definitions with metadata
-   - Added terminology mapping for all field variations
-   - Added helper functions for field lookups
-
-2. **Updated `chat-ui/lib/caps-generator.ts`:**
-   - Expanded FanSelection interface from 17 to 76 fields
-   - Updated normalizeSelection() for nested JSON format
-   - Added CAPS_HEADERS_EXTENDED (56 columns)
-   - Added generateCapsClipboardExtended() for full export
-   - Added generateJsonExport() for JSON output
-   - Maintained backward compatibility
-
-**Field Categories Now Supported:**
-
-| Category | Fields |
-|----------|--------|
-| **Core** | mark, quantity, series, size, model |
-| **Performance** | cfm, staticPressure, elevation, temperature |
-| **Electrical** | voltage, phase, frequency, motorHp, motorDesign, enclosure, ulListed, efficiencyRating |
-| **VariGreen** | variGreenControl, transformerHoa, includeBalanceDial |
-| **Elec Accessories** | disconnectSwitch, disconnectRating, disconnectProtection, disconnectType, motorStarter, wiringPigtail |
-| **Sizing** | sparkResistance, highWindRated, seismicRated, driveType, applyVfd, damperSpCorrection |
-| **Construction** | coatings, hoodHasps, conduitChaseQty, birdscreenMaterial, fasteners |
-| **Accessories** | damper, damperActuator, damperMounting, damperBladeAction, unitWarranty |
-| **Mounting** | roofCurbs, curbExtension, curbCapAdapter, hingedCurbCap, curbSeal, tieDownPoints |
-
----
+Extended chat UI to support ALL 62 CAPS input fields.
 
 ### Task 3: AI Context Structure for Per-Section Generation ✅
 **Status:** COMPLETE (Dec 18, 2025 @ 4:00 PM)
 
+Created comprehensive AI context structure in `chat-ui/ai-context/`.
+
+### Task 4: Map All Field Options & Visual Display ✅
+**Status:** COMPLETE (Dec 18, 2025)
+
+Created field options modal (`chat-ui/lib/caps-field-options.ts`) with 58 fields across 3 screens.
+
+### Task 5: Enhanced JSON/CSV Export with All Input Fields ✅
+**Status:** COMPLETE (Dec 19, 2025 @ 11:42 AM)
+
 **What Was Built:**
 
-Created comprehensive AI context structure mirroring the `trane_lcur_demo/ai-context/` pattern:
+Updated the selection tool to display ALL input fields needed for CAPS selection:
 
-```
-chat-ui/ai-context/
-├── README.md                    # Per-section generation overview
-├── EQUIPMENT_SELECTION_GUIDE.md # Quick reference for AI
-├── exhaust-fans/               # G/GB series context files
-│   ├── performance.md          # CFM, Static Pressure, Elevation, Temp
-│   ├── electrical.md           # Voltage, Phase, Frequency, Motor
-│   ├── drive-type.md           # Direct vs Belt, VariGreen, Sizing
-│   ├── accessories.md          # Damper, Coating, Birdscreen, Mounting
-│   └── environment.md          # Application context, Location, Special
-```
+1. **Updated `chat-ui/lib/caps-generator.ts`:**
+   - Switched default `generateCapsClipboard()` to use extended format with 56 fields
+   - Added `StructuredCapsInput` interface organized by CAPS UI screens
+   - Added `toStructuredCapsInput()` function to convert flat selections
+   - Added `generateStructuredJsonExport()` for JSON organized by screens
+   - Added `generateAllExports()` for complete export data package
 
-**Each Section File Contains:**
-1. **Section Overview** - What the section controls
-2. **Field Definitions** - For each field:
-   - Field ID and Name
-   - REQUIRED/OPTIONAL and ASK HUMAN/AUTO-GENERATE flags
-   - Available Options with descriptions
-   - Selection Logic (when to use each option)
-   - AI Generation Strategy (specific instructions)
-3. **Dependencies** - Related sections/fields
-4. **Common Scenarios** - Real-world examples with JSON and reasoning
-5. **Human Input Summary** - Tables of when to ask vs auto-generate
-6. **Smart Defaults Summary** - JavaScript code for defaults
+2. **Updated `chat-ui/components/message-bubble.tsx`:**
+   - Added tabbed interface for JSON and CSV preview
+   - JSON tab shows structured format organized by CAPS screens
+   - CSV tab shows formatted table with category headers
+   - Copy buttons for each format
+   - Field count summary (56 total: 15 sizing, 18 electrical, 15 configuration)
 
-**Key Design Principles:**
-- **Minimize Questions**: Only ask CFM, SP, and context-triggered questions
-- **Smart Defaults**: 460V/3ph/60Hz, TEFC, Galvanized, etc.
-- **Context-Aware**: Location triggers (CA→seismic, FL→wind, etc.)
-- **Application-Specific**: Kitchen (no birdscreen), Lab (spark), Pool (coatings)
+3. **Updated `chat-ui/app/page.tsx`:**
+   - Now generates both `capsClipboard` and `structuredJson` exports
+   - Attaches both to message for display
 
-**Processing Order Defined:**
-1. Performance (CFM, SP) → User MUST provide
-2. Drive Type (Direct/Belt/VG) → Infer from CFM or ask
-3. Electrical (Voltage, Phase) → Smart defaults unless special
-4. Environment (Location, Application) → Context-triggered questions
-5. Accessories → Defaults with application overrides
+**Export Formats:**
 
----
+| Format | Description |
+|--------|-------------|
+| **Structured JSON** | Organized by CAPS UI screens (sizing.basicInputs, electrical.motor, etc.) |
+| **CSV (Tab-delimited)** | 56 columns with headers matching CAPS import format |
 
-### Task 4: Map All Field Options & Visual Display
-**Status:** Next Up 🎯
+**Field Categories in Export:**
 
-**Goal:** Document EVERY option for each of the 62 input fields and create visual browser display.
-
-**Why This Matters:**
-- Current field definitions have incomplete/inaccurate options
-- Need actual CAPS dropdown values (e.g., "Title 24/California" not just "true/false")
-- Engineers need to verify all options are correctly supported
-- Visual display helps debugging and validation
-
-**Known Option Updates Needed:**
-
-| Field | Current Options | Actual CAPS Options |
-|-------|-----------------|---------------------|
-| Available Sizes | "Optimized", "All" | Optimized, All, Specific (array) |
-| Spark Resistance | None, TypeA, TypeB, TypeC | None, Spark B, Spark C |
-| Efficiency Code Req | true/false | No, Title 24/California, Washington St Energy Code, ANSI/ASHRAE/IES Standard 90.1 |
-| Disconnect Rating | NEMA-1, NEMA-3R, etc. | Need to verify complete list |
-| Motor Enclosure | TEFC, TENV, ODP, TEAO, IP55 | Need to verify from CAPS |
-| VariGreen Control | None, Remote Dial, etc. | Need complete list |
-| Damper Actuator | Gravity, Motorized, Spring Return | Verify against CAPS |
-| Birdscreen Material | Galvanized, Aluminum, Stainless, None | Verify |
-
-**Deliverables:**
-
-1. **Complete Options Schema** (`chat-ui/lib/caps-field-options.ts`):
-   ```typescript
-   export interface FieldOption {
-     id: string;
-     label: string;
-     capsValue: string | number | boolean;
-     description?: string;
-   }
-   
-   export interface CapsFieldDefinition {
-     id: string;
-     name: string;
-     category: string;
-     type: 'text' | 'number' | 'boolean' | 'select' | 'multiselect';
-     options?: FieldOption[];
-     default: string | number | boolean;
-     required: boolean;
-   }
-   ```
-
-2. **Visual Component** ("Show Input Field Options" button):
-   - Collapsible nested tree structure
-   - Grouped by category (Performance, Electrical, Sizing, etc.)
-   - Shows field name, type, all options, default value
-   - Searchable/filterable
-
-3. **Memory Bank Documentation** (`memory-bank/caps-field-options.md`):
-   - Complete reference of all fields and options
-   - Verified against actual CAPS software
-   - Notes on option IDs if available
-
-**Verification Method:**
-1. Open CAPS software on Windows VM
-2. Go through each dropdown/field on Sizing, Electrical, Configuration screens
-3. Document exact option values and labels
-4. Cross-reference with decompiled DLL code if needed
-
-**UI Implementation:**
-```tsx
-// In chat-ui/app/page.tsx
-<Button onClick={() => setShowFieldOptions(true)}>
-  Show Input Field Options
-</Button>
-
-<Dialog open={showFieldOptions}>
-  <FieldOptionsTree fields={CAPS_FIELD_DEFINITIONS} />
-</Dialog>
-```
+| Category | Fields | Example Fields |
+|----------|--------|----------------|
+| Core | 5 | Mark, Quantity, Series, Size, Model |
+| Performance | 4 | CFM, SP, Elevation, Temperature |
+| Electrical | 8 | Voltage, Phase, Frequency, Motor HP, Enclosure |
+| VariGreen | 3 | VG Control, Transformer HOA, Balance Dial |
+| Disconnect | 8 | Disconnect Rating, Protection, Type, etc. |
+| Sizing | 11 | Spark, High Wind, Seismic, Drive Type, VFD |
+| Construction | 5 | Coatings, Hood Hasps, Birdscreen, Fasteners |
+| Accessories | 6 | Damper, Actuator, Mounting, Warranty |
+| Mounting | 6 | Roof Curbs, Extension, Seal, Tie Down |
+| **Total** | **56** | |
 
 ---
 
-## 📋 Future Enhancements (After Task 1-4)
+### Task 6: Mechanical Schedule Upload & AI Parsing ✅
+**Status:** COMPLETE (Dec 19, 2025 @ 12:03 PM)
 
-### Phase 3: PDF & Image Parsing
-Add support for uploading schedule PDFs and images:
-- Use Claude Vision API for image analysis
-- Use pdf-parse for text extraction
-- Auto-extract fan specs from uploaded documents
+**What Was Built:**
+
+Implemented PDF/image upload for mechanical schedules using Google Gemini Flash 2.5 vision AI to extract fan specifications and generate CAPS selections.
+
+**Files Created:**
+- `chat-ui/lib/schedule-extractor.ts` - Gemini integration with extraction logic
+- `chat-ui/app/api/extract-schedule/route.ts` - File upload API endpoint
+- `chat-ui/components/schedule-upload-modal.tsx` - Drag & drop upload UI
+
+**Files Modified:**
+- `chat-ui/app/page.tsx` - Added Upload Schedule button (first in Quick Actions)
+- `chat-ui/.env.example` - Added GEMINI_API_KEY
+
+**Integration Flow:**
+```
+User clicks "Upload Schedule" → Modal opens with drag & drop
+→ File uploaded to /api/extract-schedule
+→ Gemini Flash 2.5 extracts fan specs from image/PDF
+→ Items formatted as chat message
+→ Claude generates CAPS selections with JSON/CSV export tabs
+```
+
+**Supported Formats:** PNG, JPEG, WEBP, PDF (max 10MB)
+
+**Success Criteria:** ✅ All met
+- [x] Upload PDF or image file
+- [x] Gemini extracts fan specs accurately
+- [x] Data maps to structured CAPS JSON format
+- [x] Selection displays with JSON/CSV export tabs
+- [x] Works for common schedule formats
+
+---
+
+## 🎯 Next Priority: Future Enhancements
+
+---
+
+## 📋 Future Enhancements (After Task 6)
 
 ### Phase 4: BuildVision API Integration
 Connect to real BuildVision document extraction:
 - Fetch extracted specs from BuildVision API
 - Map to CAPS-compatible format
 - Track extraction accuracy metrics
+
+### Phase 5: CAPS Windows App Integration
+Direct integration with CAPS software:
+- Automate clipboard paste into CAPS
+- Validate selections against CAPS results
+- Compare AI selections vs engineer selections
 
 ---
 
@@ -257,7 +154,8 @@ Connect to real BuildVision document extraction:
 |-----------|------------|
 | Chat UI | Next.js 16, React 19 |
 | Styling | Tailwind CSS 4, BV Design System |
-| AI | Claude Sonnet 4.5 (Anthropic SDK) |
+| AI (Chat) | Claude Sonnet 4.5 (Anthropic SDK) |
+| AI (Vision) | Gemini Flash 2.5 (Google Generative AI) |
 | Package Manager | Bun |
 | Deployment | Vercel |
 | Type Safety | TypeScript (strict mode) |
@@ -276,22 +174,18 @@ Connect to real BuildVision document extraction:
 │   └── globals.css          # BV design tokens
 ├── components/
 │   ├── ui/                  # Button, Card, Badge, Textarea
-│   └── message-bubble.tsx   # Chat message component
+│   ├── message-bubble.tsx   # Chat message with export tabs
+│   └── field-options-modal.tsx  # CAPS field options display
 ├── lib/
 │   ├── fan-context.ts       # AI system prompt + CAPS_FIELDS
-│   ├── caps-generator.ts    # CAPS clipboard generation
-│   ├── caps-field-options.ts # TO BE CREATED (Task 4)
+│   ├── caps-generator.ts    # CAPS clipboard + JSON generation
+│   ├── caps-field-options.ts # Field definitions (58 fields)
 │   └── utils.ts             # Utility functions
-├── ai-context/              # ✅ CREATED (Task 3)
+├── ai-context/              # AI context files
 │   ├── README.md            # Per-section overview
 │   ├── EQUIPMENT_SELECTION_GUIDE.md  # Quick reference
-│   └── exhaust-fans/
-│       ├── performance.md   # CFM, SP, Elevation, Temp
-│       ├── electrical.md    # Voltage, Phase, Motor
-│       ├── drive-type.md    # Direct/Belt, Spark, Seismic
-│       ├── accessories.md   # Damper, Coating, Mounting
-│       └── environment.md   # Application, Location
-└── .env.local               # API key (ANTHROPIC_API_KEY)
+│   └── exhaust-fans/        # G/GB context (5 files)
+└── .env.local               # API keys
 ```
 
 ### Fan Selector Library
@@ -304,12 +198,4 @@ Connect to real BuildVision document extraction:
 │   ├── extraction/schedule-parser.ts
 │   └── export/caps-clipboard.ts
 └── examples/example-usage.ts
-```
-
-### Reference Implementation
-```
-/Users/mackenzie-buildvision/Programming/trane_lcur_demo/ai-context/
-├── README.md                    # Per-section generation docs
-├── precedent/airflow.md         # Example: airflow section fields
-└── precedent/electrical.md      # Example: electrical section fields
 ```

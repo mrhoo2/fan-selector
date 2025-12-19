@@ -535,39 +535,11 @@ const CAPS_HEADERS_BASIC = [
 
 /**
  * Generate CAPS-compatible clipboard CSV from selections
- * Uses basic format for clipboard import compatibility
+ * Uses EXTENDED format with ALL input fields for complete export
  */
 export function generateCapsClipboard(selections: FanSelection[]): string {
-  const lines: string[] = [];
-  
-  // Add header row
-  lines.push(CAPS_HEADERS_BASIC.join('\t'));
-  
-  // Add data rows
-  for (let i = 0; i < selections.length; i++) {
-    const sel = selections[i];
-    const row = [
-      sel.mark || `EF-${i + 1}`,
-      String(sel.quantity || 1),
-      String(sel.cfm),
-      String(sel.staticPressure),
-      String(sel.voltage || 460),
-      String(sel.phase || 3),
-      String(sel.frequency || 60),
-      sel.driveType || inferDriveType(sel),
-      sel.motorHp || '',
-      sel.enclosure || 'TEFC',
-      sel.series || inferSeries(sel),
-      sel.size || '',
-      (sel.backdraftDamper || sel.damper) ? 'Yes' : 'No',
-      (sel.disconnect || sel.disconnectSwitch) ? 'Yes' : 'No',
-      String(sel.elevation || 0),
-      String(sel.temperature || 70),
-    ];
-    lines.push(row.join('\t'));
-  }
-  
-  return lines.join('\r\n');
+  // Use extended format to include all input fields
+  return generateCapsClipboardExtended(selections);
 }
 
 /**
@@ -657,10 +629,251 @@ export function generateCapsClipboardExtended(selections: FanSelection[]): strin
 }
 
 /**
- * Generate JSON export with all fields
+ * Generate JSON export with all fields (flat format)
  */
 export function generateJsonExport(selections: FanSelection[]): string {
   return JSON.stringify(selections, null, 2);
+}
+
+/**
+ * Structured JSON format organized by CAPS UI screens
+ * This format matches the native Windows CAPS application layout
+ */
+export interface StructuredCapsInput {
+  mark: string;
+  quantity: number;
+  
+  // Screen 1: Sizing / Inputs
+  sizing: {
+    basicInputs: {
+      cfm: number;
+      staticPressure: number;
+      elevation: number;
+      temperature: number;
+      availableSizes: string;
+    };
+    applicationInputs: {
+      sparkResistance: string;
+      highWindRated: boolean;
+      seismicRated: boolean;
+      efficiencyCodeReq: boolean;
+      caTitle20Req: boolean;
+    };
+    advancedInputs: {
+      driveType: string;
+      applyVfd: boolean;
+      speedController: boolean;
+      performanceBaffle: boolean;
+      damperSpCorrection: string;
+    };
+  };
+  
+  // Screen 2: Electrical / Motor
+  electrical: {
+    motor: {
+      voltage: number;
+      phase: number;
+      frequency: number;
+      motorHp: string;
+      motorDesign: string;
+      enclosure: string;
+      ulListed: string;
+      efficiencyRating: string;
+    };
+    variGreenControl: {
+      variGreenControl: string;
+      transformerHoa: string;
+      includeBalanceDial: boolean;
+    };
+    electricalAccessories: {
+      disconnectSwitch: boolean;
+      disconnectRating: string;
+      disconnectProtection: string;
+      disconnectType: string;
+      motorStarter: boolean;
+      wiringPigtail: boolean;
+      motorMfgLocation: string;
+      specialMotor: boolean;
+    };
+  };
+  
+  // Screen 3: Configuration / Construction
+  configuration: {
+    construction: {
+      coatings: boolean;
+      hoodHasps: boolean;
+      conduitChaseQty: number;
+      birdscreenMaterial: string;
+      fasteners: string;
+    };
+    accessories: {
+      damper: boolean;
+      damperActuator: string;
+      damperMounting: string;
+      damperBladeAction: string;
+      unitWarranty: string;
+      specialNameplate: boolean;
+    };
+    mounting: {
+      roofCurbs: boolean;
+      curbExtension: boolean;
+      curbCapAdapter: boolean;
+      hingedCurbCap: string;
+      curbSeal: boolean;
+      tieDownPoints: boolean;
+    };
+  };
+  
+  // Selection Output
+  selection: {
+    series: string;
+    size: string;
+    model: string;
+  };
+}
+
+/**
+ * Convert flat FanSelection to structured CAPS input format
+ */
+export function toStructuredCapsInput(sel: FanSelection, index: number = 0): StructuredCapsInput {
+  return {
+    mark: sel.mark || `EF-${index + 1}`,
+    quantity: sel.quantity || 1,
+    
+    sizing: {
+      basicInputs: {
+        cfm: sel.cfm,
+        staticPressure: sel.staticPressure,
+        elevation: sel.elevation || 0,
+        temperature: sel.temperature || 70,
+        availableSizes: sel.availableSizes || 'Optimized',
+      },
+      applicationInputs: {
+        sparkResistance: sel.sparkResistance || 'None',
+        highWindRated: sel.highWindRated || false,
+        seismicRated: sel.seismicRated || false,
+        efficiencyCodeReq: sel.efficiencyCodeReq || false,
+        caTitle20Req: sel.caTitle20Req || false,
+      },
+      advancedInputs: {
+        driveType: sel.driveType || inferDriveType(sel),
+        applyVfd: sel.applyVfd || false,
+        speedController: sel.speedController || false,
+        performanceBaffle: sel.performanceBaffle || false,
+        damperSpCorrection: sel.damperSpCorrection || 'None',
+      },
+    },
+    
+    electrical: {
+      motor: {
+        voltage: sel.voltage || 460,
+        phase: sel.phase || 3,
+        frequency: sel.frequency || 60,
+        motorHp: sel.motorHp || '',
+        motorDesign: sel.motorDesign || 'NEMA',
+        enclosure: sel.enclosure || 'TEFC',
+        ulListed: sel.ulListed || '705',
+        efficiencyRating: sel.efficiencyRating || 'High',
+      },
+      variGreenControl: {
+        variGreenControl: sel.variGreenControl || 'None',
+        transformerHoa: sel.transformerHoa || 'None',
+        includeBalanceDial: sel.includeBalanceDial || false,
+      },
+      electricalAccessories: {
+        disconnectSwitch: sel.disconnectSwitch || sel.disconnect || false,
+        disconnectRating: sel.disconnectRating || 'NEMA-1',
+        disconnectProtection: sel.disconnectProtection || 'None',
+        disconnectType: sel.disconnectType || 'Toggle',
+        motorStarter: sel.motorStarter || false,
+        wiringPigtail: sel.wiringPigtail || false,
+        motorMfgLocation: sel.motorMfgLocation || 'No Preference',
+        specialMotor: sel.specialMotor || false,
+      },
+    },
+    
+    configuration: {
+      construction: {
+        coatings: typeof sel.coatings === 'boolean' ? sel.coatings : false,
+        hoodHasps: sel.hoodHasps || false,
+        conduitChaseQty: sel.conduitChaseQty || 1,
+        birdscreenMaterial: sel.birdscreenMaterial || 'Galvanized',
+        fasteners: sel.fasteners || 'Standard',
+      },
+      accessories: {
+        damper: sel.damper || sel.backdraftDamper || false,
+        damperActuator: sel.damperActuator || 'Gravity',
+        damperMounting: sel.damperMounting || 'Factory',
+        damperBladeAction: sel.damperBladeAction || 'Parallel',
+        unitWarranty: sel.unitWarranty || '1 Yr',
+        specialNameplate: sel.specialNameplate || false,
+      },
+      mounting: {
+        roofCurbs: sel.roofCurbs || false,
+        curbExtension: sel.curbExtension || false,
+        curbCapAdapter: sel.curbCapAdapter || false,
+        hingedCurbCap: sel.hingedCurbCap || 'None',
+        curbSeal: sel.curbSeal || false,
+        tieDownPoints: sel.tieDownPoints || false,
+      },
+    },
+    
+    selection: {
+      series: sel.series || inferSeries(sel),
+      size: sel.size || '',
+      model: sel.model || '',
+    },
+  };
+}
+
+/**
+ * Generate structured JSON export organized by CAPS UI screens
+ */
+export function generateStructuredJsonExport(selections: FanSelection[]): string {
+  const structured = selections.map((sel, i) => toStructuredCapsInput(sel, i));
+  return JSON.stringify(structured.length === 1 ? structured[0] : structured, null, 2);
+}
+
+/**
+ * Export data structure for UI display
+ */
+export interface SelectionExportData {
+  /** Flat JSON representation */
+  flatJson: string;
+  /** Structured JSON organized by CAPS UI screens */
+  structuredJson: string;
+  /** Tab-delimited CSV with all fields */
+  csv: string;
+  /** Summary string for quick reference */
+  summary: string;
+  /** Number of selections */
+  count: number;
+  /** List of field counts by category */
+  fieldCounts: {
+    sizing: number;
+    electrical: number;
+    configuration: number;
+    total: number;
+  };
+}
+
+/**
+ * Generate all export formats for selections
+ */
+export function generateAllExports(selections: FanSelection[]): SelectionExportData {
+  return {
+    flatJson: generateJsonExport(selections),
+    structuredJson: generateStructuredJsonExport(selections),
+    csv: generateCapsClipboardExtended(selections),
+    summary: selections.map(s => formatSelectionSummary(s)).join('; '),
+    count: selections.length,
+    fieldCounts: {
+      sizing: 15,        // CFM, SP, Elevation, Temperature, Available Sizes, Spark, High Wind, Seismic, Efficiency Code, CA Title 20, Drive Type, VFD, Speed Controller, Perf Baffle, Damper SP
+      electrical: 18,    // Voltage, Phase, Frequency, Motor HP, Design, Enclosure, UL, Efficiency, VG Control, Transformer, Balance Dial, Disconnect (6 fields), Starter, Pigtail, Mfg Location, Special Motor
+      configuration: 15, // Coatings, Hood Hasps, Conduit, Birdscreen, Fasteners, Damper (6 fields), Warranty, Nameplate, Curbs (6 fields)
+      total: 56,
+    },
+  };
 }
 
 /**

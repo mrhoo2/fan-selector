@@ -1,101 +1,158 @@
 # Active Context: Current Focus & Working Memory
 
 ## Current Focus
-**Task 5: CAPS Field Options Browser Display** ✅ COMPLETE
+**Header Redesign & Task 6 Complete** ✅ (Dec 19, 2025)
 
-Created an interactive field options modal for the chat-ui that displays all CAPS input fields organized by the native Windows app screens.
+Successfully implemented PDF/image upload for mechanical schedules, and redesigned header to match bvtakeoffs.vercel.app style.
 
 ---
 
 ## 🎯 Recently Completed Work
 
-### CAPS Field Options Browser Display (2024-12-18)
+### Header Redesign (Dec 19, 2025 @ 12:16 PM)
 
-**Files Created/Modified:**
+**What Was Built:**
 
-1. **`chat-ui/lib/caps-field-options.ts`** - TypeScript data file with:
-   - 58 total fields organized by 3 screens
-   - Each field has an inline source comment for audit/validation
-   - Source types: Decompiled C# enums, Database references, UI Sample observations
-   - Helper functions: `getFieldByName()`, `getAllFields()`, `getRequiredFields()`, `getTotalFieldCount()`
+Redesigned header to match bvtakeoffs.vercel.app and tranelcur.com style with official logos.
 
-2. **`chat-ui/components/field-options-modal.tsx`** - Interactive modal component:
-   - Tabbed navigation for 3 screens (Sizing/Inputs, Electrical/Motor, Configuration/Construction)
-   - Collapsible sections for each field group
-   - Expandable option display per field
-   - Shows field type, required status, source references
+**Changes:**
 
-3. **`chat-ui/app/page.tsx`** - Updated main page:
-   - Added "Display Input Fields" button in Quick Actions sidebar
-   - Integrated modal with state management
+1. **Greenheck Logo** (left side):
+   - Official horizontal PNG from webcontent.greenheck.com
+   - File: `/public/greenheck-logo.png` (7KB)
+   - Height: 40px
 
-### Source Reference Types Used
+2. **"POWERED BY" + BuildVision Logo** (right side):
+   - "POWERED BY" text with classes: `text-xs font-medium text-neutral-400 uppercase tracking-wider`
+   - Official BuildVision full-color PNG from bvtakeoffs.vercel.app CDN
+   - File: `/public/buildvision-logo.png` (15KB)
+   - Logo height: 20px
 
-| Source Type | Description | Example |
-|-------------|-------------|---------|
-| `Decompiled/*.cs` | From decompiled C# enums | SparkResistanceOptions.cs, DriveType.cs |
-| `Database (Fans.zip)` | SQLite tables inside Data/Core/English/Fans.zip | Efficiency codes, VariGreen options |
-| `UI Sample` | Observed in native CAPS Windows app | Boolean toggles, numeric fields |
+3. **Layout:**
+   - Left: Greenheck logo | "Fan Selector" / "G/GB Series"
+   - Right: "POWERED BY" BuildVision logo | Clear button
+   - Responsive: Logos hide on smaller screens
 
-### Fields by Screen
-
-| Screen | Sections | Fields |
-|--------|----------|--------|
-| **1. Sizing/Inputs** | 4 | 11 fields |
-| **2. Electrical/Motor** | 6 | 26 fields |
-| **3. Configuration/Construction** | 4 | 21 fields |
-| **Total** | 14 | **58 fields** |
+**Files Modified:**
+- `chat-ui/app/page.tsx` - Header component redesign
+- `chat-ui/public/greenheck-logo.png` - Official Greenheck logo
+- `chat-ui/public/buildvision-logo.png` - Official BuildVision logo
 
 ---
 
-## 🔄 Previous Task: Field Mapping from Decompiled Code
+### Task 6: PDF/Image Schedule Upload & AI Parsing (Dec 19, 2025)
 
-### Found Decompiled Enums (Verified Sources)
-| Enum File | Path | Options |
-|-----------|------|---------|
-| `SparkResistanceOptions.cs` | Decompiled/Cfs.Fans.FanSelector/Cfs.Fans.FanSelector/ | None, SparkA, SparkB, SparkC |
-| `DriveType.cs` | Decompiled/Cfs.Fans.FanSelector/Cfs.Fans.FanSelector/ | Any, Belt, Direct |
-| `DamperTypes.cs` | Decompiled/Cfs.Fans.FanSelector/Cfs.Fans.FanSelector/ | None, Backdraft, Control |
-| `AllowVfd.cs` | Decompiled/Cfs.Fans.FanSelector/Cfs.Fans.FanSelector/ | No, UnderSpeed, OverSpeed, Both |
-| `Material.cs` | Decompiled/Cfs.Fans.FanSelector/Cfs.Fans.FanSelector/ | Galvanized, Aluminum, StainlessSteel, etc. |
-| `EnclosureType.cs` | Decompiled/Cfs.Fans.MotorSelector2/Cfs.Fans.MotorSelector2.Common/ | None, DP, OAO, TEAO, TEBC, TEFC, TENV, etc. |
-| `ManufacturingLocation.cs` | Decompiled/Cfs.Fans.MotorSelector2/Cfs.Fans.MotorSelector2.Common/ | NoPreference, AmericasEurope, Usa |
+**What Was Built:**
 
-### Interface Properties (IFanSelector.cs)
-Located at: `Decompiled/Cfs.Fans.FanSelector/Cfs.Fans.FanSelector/IFanSelector.cs`
+Implemented a complete mechanical schedule upload and parsing system using Google Gemini Flash 2.5 vision AI.
 
-Key properties referenced:
-- `RequiresHighWind` (bool)
-- `RequiresSeismic` (bool)
-- `AllowSpeedController` (bool)
-- `AllowPerformanceBaffle` (bool)
-- `HasDamper` (DamperTypes enum)
-- `Voltage` (string)
-- `Phase` (string)
-- `RequiresUL762` (bool)
+**Files Created:**
 
----
+1. **`chat-ui/lib/schedule-extractor.ts`** - Core Gemini integration:
+   - `ExtractedScheduleItem` interface for parsed fan specs
+   - `ExtractionResult` interface with confidence and warnings
+   - `extractScheduleFromFile()` - Gemini Flash 2.5 vision processing
+   - `formatExtractedItemsForChat()` - Converts items to chat message
+   - `buildSelectionRequestFromExtraction()` - Full message builder
+   - Extraction prompt optimized for mechanical schedule tables
 
-## 📋 Remaining Work (Future Tasks)
+2. **`chat-ui/app/api/extract-schedule/route.ts`** - API endpoint:
+   - POST endpoint for file upload (FormData)
+   - File type validation (PNG, JPEG, WEBP, PDF)
+   - File size validation (max 10MB)
+   - Base64 encoding for Gemini
+   - Returns extracted items + pre-formatted chat message
 
-### Database Extraction (Lower Priority)
-Some field options are stored in SQLite database inside `Data/Core/English/Fans.zip`:
-- Efficiency code options (Title 24, Washington St, ASHRAE)
-- VariGreen control options
-- Damper model options
-- Warranty options
+3. **`chat-ui/components/schedule-upload-modal.tsx`** - Upload UI:
+   - Drag & drop zone with click-to-browse
+   - File type badges (PNG, JPEG, WEBP, PDF)
+   - Upload states: idle, uploading, processing, success, error
+   - Progress indicators with Gemini processing message
+   - Success animation before sending to chat
 
-To extract:
-```bash
-cd Data/Core/English
-unzip Fans.zip -d Fans_extracted/
-sqlite3 <database.db> ".tables"
+**Files Modified:**
+
+4. **`chat-ui/app/page.tsx`** - Integration:
+   - Added `showUploadModal` state
+   - Added `handleScheduleExtracted()` callback
+   - Upload Schedule button as FIRST item in Quick Actions
+   - ScheduleUploadModal component at bottom
+   - Extracted data flows to chat as user message
+
+5. **`chat-ui/.env.example`** - Added GEMINI_API_KEY
+
+**Integration Flow:**
+
+```
+User clicks "Upload Schedule" in Quick Actions
+→ Modal opens with drag & drop zone
+→ User selects PDF or image file
+→ File sent to /api/extract-schedule
+→ Gemini Flash 2.5 analyzes image/PDF
+→ Returns ExtractedScheduleItem[] with confidence
+→ Items formatted as chat message
+→ Modal shows success, auto-closes
+→ Chat receives message as if user typed it
+→ Claude generates CAPS selections
+→ Response includes JSON/CSV export tabs
 ```
 
-### Validation Tasks
-- [ ] Verify efficiency code options against native CAPS app
-- [ ] Verify VariGreen control options against database
-- [ ] Cross-check all field options with actual CAPS UI
+**ExtractedScheduleItem Interface:**
+
+```typescript
+interface ExtractedScheduleItem {
+  mark: string;           // Equipment tag (EF-1, TEF-1, etc.)
+  quantity: number;
+  cfm: number;
+  staticPressure: number;
+  voltage?: number;
+  phase?: number;
+  frequency?: number;
+  motorHp?: number;
+  driveType?: string;     // direct, belt, varigreen
+  accessories?: string[]; // Parsed from notes
+  location?: string;      // Floor, area, zone
+  application?: string;   // Kitchen, restroom, etc.
+  notes?: string;
+}
+```
+
+**Supported File Types:**
+
+| Format | MIME Type | Use Case |
+|--------|-----------|----------|
+| PNG | image/png | Screenshots, scanned pages |
+| JPEG | image/jpeg | Photos, scanned documents |
+| WEBP | image/webp | Web-optimized images |
+| PDF | application/pdf | Construction documents |
+
+---
+
+### Task 5: Enhanced JSON/CSV Export with All Input Fields (Dec 19, 2025)
+
+**What Was Built:**
+
+Updated the selection tool to display ALL input fields needed for creating a selection using the native Windows CAPS tool.
+
+**Files Modified:**
+
+1. **`chat-ui/lib/caps-generator.ts`** - Extended export functions:
+   - Switched `generateCapsClipboard()` to use extended format with 56 fields
+   - Added `StructuredCapsInput` interface organized by CAPS UI screens
+   - Added `toStructuredCapsInput()` to convert flat selections to structured format
+   - Added `generateStructuredJsonExport()` for JSON organized by screens
+   - Added `generateAllExports()` for complete export data package
+
+2. **`chat-ui/components/message-bubble.tsx`** - Enhanced display:
+   - Added `CapsExportSection` component with tabbed interface
+   - JSON tab shows structured format organized by CAPS screens
+   - CSV tab shows formatted table with category headers
+   - Copy buttons for JSON and CSV formats
+   - Field count summary badges (56 total fields)
+
+3. **`chat-ui/app/page.tsx`** - Integration:
+   - Generates both `capsClipboard` and `structuredJson` exports
+   - Attaches selections, structured JSON to message for display
 
 ---
 
@@ -104,32 +161,41 @@ sqlite3 <database.db> ".tables"
 ### Chat UI (Active Development)
 ```
 chat-ui/
-├── app/page.tsx              # Main page with modal integration
+├── app/page.tsx              # Main page with upload + export integration
+├── app/api/
+│   ├── chat/route.ts         # Claude streaming API
+│   └── extract-schedule/route.ts  # Gemini upload processing
 ├── components/
-│   └── field-options-modal.tsx  # Field options display modal
+│   ├── message-bubble.tsx    # Message with JSON/CSV export tabs
+│   ├── field-options-modal.tsx   # Field options display modal
+│   └── schedule-upload-modal.tsx # PDF/image upload modal
 ├── lib/
-│   ├── caps-field-options.ts    # Field definitions with source comments
-│   ├── caps-generator.ts        # CAPS clipboard generation
-│   └── fan-context.ts           # AI context loading
-└── ai-context/                  # AI training documents
+│   ├── caps-generator.ts     # Extended CAPS export (56 fields)
+│   ├── caps-field-options.ts # Field definitions with source comments
+│   ├── schedule-extractor.ts # Gemini Flash 2.5 integration
+│   ├── fan-context.ts        # AI context and field metadata
+│   └── utils.ts              # Utility functions
+├── ai-context/               # AI training documents
+└── .env.local                # API keys (ANTHROPIC + GEMINI)
 ```
 
-### Decompiled Sources (Reference)
+### Environment Variables
 ```
-Decompiled/
-├── Cfs.Fans.FanSelector/         # Core selection enums
-└── Cfs.Fans.MotorSelector2/      # Motor enums
+ANTHROPIC_API_KEY=sk-ant-...  # Required for Claude chat
+GEMINI_API_KEY=AIza...        # Required for schedule upload
 ```
 
 ---
 
 ## 📝 Notes for Future Work
 
-1. **Source Comments Format**: Each field in caps-field-options.ts has a one-line comment above it showing the exact source file path for validation/audit.
+1. **Multi-page PDF Support**: Currently processes first page only. Future enhancement could extract from multiple pages.
 
-2. **Database Extraction**: Fields marked "Database (Data/Core/English/Fans.zip)" need SQLite extraction to verify complete option lists.
+2. **Confidence Thresholds**: Gemini returns confidence scores. Could add warnings for low-confidence extractions.
 
-3. **UI Sample Sources**: Fields marked "UI Sample" were observed from native CAPS Windows app screenshots - may need verification against actual software.
+3. **Schedule Format Training**: Extraction prompt could be enhanced with more schedule format examples.
+
+4. **Batch Processing**: Future feature to upload multiple schedules at once.
 
 ---
 
@@ -137,5 +203,8 @@ Decompiled/
 
 | Date | Update |
 |------|--------|
-| 2024-12-18 | Created field options modal with source comments |
-| 2024-12-18 | Mapped 58 fields across 3 screens to decompiled/database sources |
+| 2024-12-19 | Header redesign with Greenheck + BuildVision logos (bvtakeoffs style) |
+| 2024-12-19 | Task 6: PDF/image upload with Gemini Flash 2.5 parsing |
+| 2024-12-19 | Task 5: Enhanced JSON/CSV export with all 56 input fields |
+| 2024-12-18 | Task 4: Field options modal with 58 fields and source comments |
+| 2024-12-18 | Tasks 1-3: CAPS clipboard, all fields display, AI context structure |

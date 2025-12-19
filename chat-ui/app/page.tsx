@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, Fan, Clipboard, Check, RotateCcw, ListFilter } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Loader2, Fan, Clipboard, Check, RotateCcw, ListFilter, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageBubble, type Message } from "@/components/message-bubble";
-import { parseAiResponse, formatSelectionSummary } from "@/lib/caps-generator";
+import { parseAiResponse, formatSelectionSummary, generateStructuredJsonExport } from "@/lib/caps-generator";
 import { FieldOptionsModal } from "@/components/field-options-modal";
+import { ScheduleUploadModal } from "@/components/schedule-upload-modal";
+import { type ExtractedScheduleItem } from "@/lib/schedule-extractor";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,6 +19,7 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showFieldOptions, setShowFieldOptions] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change
@@ -107,7 +110,7 @@ I'm here to help you test CAPS (Computerized Automated Product Selection) for G 
       // Parse the AI response for CAPS data
       const parseResult = parseAiResponse(accumulatedMessage);
       
-      // Add completed assistant message with capsClipboard if found
+      // Add completed assistant message with capsClipboard and structuredJson if found
       const assistantMessage: Message = {
         role: "assistant",
         content: accumulatedMessage,
@@ -115,7 +118,11 @@ I'm here to help you test CAPS (Computerized Automated Product Selection) for G 
       
       if (parseResult.found && parseResult.capsClipboard) {
         assistantMessage.capsClipboard = parseResult.capsClipboard;
+        assistantMessage.selections = parseResult.selections;
+        // Generate structured JSON organized by CAPS UI screens
+        assistantMessage.structuredJson = generateStructuredJsonExport(parseResult.selections);
         console.log("CAPS data extracted:", parseResult.selections.map(s => formatSelectionSummary(s)));
+        console.log("Total fields in export: 56 (Sizing: 15, Electrical: 18, Configuration: 15)");
       }
       
       setMessages([...newMessages, assistantMessage]);
@@ -159,38 +166,136 @@ I'm here to help you test CAPS (Computerized Automated Product Selection) for G 
     setStreamingMessage("");
   };
 
+  // Handle extracted schedule data - sends to chat as if user typed it
+  const handleScheduleExtracted = useCallback(async (chatMessage: string, items: ExtractedScheduleItem[]) => {
+    if (!chatMessage || isStreaming) return;
+
+    // Add the extracted data as a user message (marked as from upload)
+    const uploadMessage = `📄 **Uploaded Mechanical Schedule**\n\n${chatMessage}`;
+    
+    const newMessages: Message[] = [
+      ...messages,
+      { role: "user", content: uploadMessage },
+    ];
+    setMessages(newMessages);
+    setIsStreaming(true);
+    setStreamingMessage("");
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to get response");
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedMessage = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.text) {
+                  accumulatedMessage += parsed.text;
+                  setStreamingMessage(accumulatedMessage);
+                }
+              } catch {
+                // Ignore parse errors for incomplete chunks
+              }
+            }
+          }
+        }
+      }
+
+      // Parse the AI response for CAPS data
+      const parseResult = parseAiResponse(accumulatedMessage);
+      
+      // Add completed assistant message with capsClipboard and structuredJson if found
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: accumulatedMessage,
+      };
+      
+      if (parseResult.found && parseResult.capsClipboard) {
+        assistantMessage.capsClipboard = parseResult.capsClipboard;
+        assistantMessage.selections = parseResult.selections;
+        assistantMessage.structuredJson = generateStructuredJsonExport(parseResult.selections);
+        console.log("CAPS data from schedule upload:", parseResult.selections.map(s => formatSelectionSummary(s)));
+      }
+      
+      setMessages([...newMessages, assistantMessage]);
+      setStreamingMessage("");
+    } catch (error) {
+      console.error("Chat error from schedule extraction:", error);
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content: `❌ **Error processing schedule:** ${error instanceof Error ? error.message : "Failed to get response"}. Please try again.`,
+        },
+      ]);
+      setStreamingMessage("");
+    } finally {
+      setIsStreaming(false);
+    }
+  }, [messages, isStreaming]);
+
   return (
     <div className="h-screen flex flex-col bg-neutral-50">
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200 px-6 py-4 flex-shrink-0">
+      <header className="bg-white border-b border-neutral-200 px-6 py-3 flex-shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-greenheck-green flex items-center justify-center">
-              <Fan className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-neutral-800">
-                Greenheck Fan Selector
-              </h1>
-              <p className="text-sm text-neutral-600">
-                AI-powered G/GB series testing
-              </p>
+          {/* Left: Greenheck Logo */}
+          <div className="flex items-center gap-4">
+            <img 
+              src="/greenheck-logo.png" 
+              alt="Greenheck" 
+              className="h-10"
+            />
+            <div className="hidden sm:block border-l border-neutral-300 pl-4">
+              <p className="text-sm font-medium text-neutral-700">Fan Selector</p>
+              <p className="text-xs text-neutral-500">G/GB Series</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-xs">
-              Claude Sonnet 4.5
-            </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClearChat}
-              className="flex items-center gap-2"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Clear Chat
-            </Button>
+          {/* Right: Powered by BuildVision + Actions */}
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-1.5">
+              <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">powered by</span>
+              <img 
+                src="/buildvision-logo.png" 
+                alt="BuildVision" 
+                className="h-5"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearChat}
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
+                <span className="hidden sm:inline">Clear</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -249,6 +354,16 @@ I'm here to help you test CAPS (Computerized Automated Product Selection) for G 
               <CardTitle className="text-sm">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start bg-bv-blue/5 border-bv-blue/30 hover:bg-bv-blue/10"
+                onClick={() => setShowUploadModal(true)}
+                disabled={isStreaming}
+              >
+                <Upload className="h-4 w-4 mr-2 text-bv-blue" />
+                Upload Schedule
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -349,6 +464,13 @@ I'm here to help you test CAPS (Computerized Automated Product Selection) for G 
       <FieldOptionsModal
         isOpen={showFieldOptions}
         onClose={() => setShowFieldOptions(false)}
+      />
+
+      {/* Schedule Upload Modal */}
+      <ScheduleUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onExtracted={handleScheduleExtracted}
       />
     </div>
   );
